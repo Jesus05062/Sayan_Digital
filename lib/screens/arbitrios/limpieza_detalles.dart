@@ -4,6 +4,7 @@ import 'package:aplication_1/providers/ingresar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:aplication_1/screens/alerts.dart';
 
 class LimpiezaDetalles extends StatefulWidget {
   const LimpiezaDetalles({super.key});
@@ -21,7 +22,7 @@ class _LimpiezaDetallesState extends State<LimpiezaDetalles> {
 
     final contrib = Provider.of<IngresarProvider>(context);
     final String codigo = contrib.contribProvider;
-
+    final String Token = contrib.token;  
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -36,10 +37,14 @@ class _LimpiezaDetallesState extends State<LimpiezaDetalles> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 28, color: Colors.white),
-          onPressed: () {
+          onPressed:() async {
             final deudasProvider =
                 Provider.of<ArbitriosProvider>(context, listen: false);
-            deudasProvider.getArbitriosLimpieza(codigo);
+            final success = await deudasProvider.getArbitriosLimpieza(codigo,Token);
+             if (!success) {
+                mostrarAlertaTokenExpirado(context);
+                return;
+              }
             Navigator.pushReplacementNamed(context, 'arbitrios_limpieza');
           },
         ),

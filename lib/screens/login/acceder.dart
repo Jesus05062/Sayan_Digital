@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
+
 class Acceder extends StatefulWidget {
   const Acceder({super.key});
 
@@ -21,8 +22,9 @@ class _AccederState extends State<Acceder> {
   final txtDni = TextEditingController();
   final txtClaveWeb = TextEditingController();
 
+  //para la animación del botón
   bool _isVisible = true;
-  bool _isPressed = false; // Para la animación del botón
+  bool _isPressed = false;
 
   String dni = '';
   String claveWeb = '';
@@ -69,9 +71,9 @@ class _AccederState extends State<Acceder> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Logo desde internet
-                    Image.network(
-                      "https://munisayan.gob.pe/Rentas/Recursos/logo1.png",
+                    // Logo Muni
+                    Image.asset(
+                      "images/SayanDigital.png",
                       height: 160,
                       fit: BoxFit.contain,
                     ),
@@ -164,7 +166,7 @@ class _AccederState extends State<Acceder> {
                                     child: CircularProgressIndicator(),
                                   ),
                                 );
-
+                                 
                                 final ingresarProvider =
                                     Provider.of<IngresarProvider>(context,
                                         listen: false);
@@ -173,7 +175,7 @@ class _AccederState extends State<Acceder> {
 
                                 if (!mounted) return;
                                 Navigator.of(context, rootNavigator: true).pop();
-
+                               
                                 if (ingresarProvider.contribProvider.isNotEmpty) {
                                   if (ingresarProvider.datos.length > 1) {
                                     Navigator.pushReplacementNamed(
@@ -186,10 +188,10 @@ class _AccederState extends State<Acceder> {
                                   displayCustomAlert(
                                     title: 'ALERTA',
                                     context: context,
-                                    icon: Icons.crisis_alert,
+                                   icon: Icons.crisis_alert,
                                     message: ingresarProvider.message,
                                     color: Colors.red,
-                                  );
+                                 );
                                 }
                               }
                             },

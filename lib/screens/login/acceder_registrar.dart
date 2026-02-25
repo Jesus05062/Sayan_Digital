@@ -17,9 +17,9 @@ class AccReg extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo desde internet
-                Image.network(
-                  "https://munisayan.gob.pe/Rentas/Recursos/logo1.png",
+                // Logo Muni
+                Image.asset(
+                  "images/SayanDigital.png",
                   height: size.height * 0.25,
                   fit: BoxFit.contain,
                 ),

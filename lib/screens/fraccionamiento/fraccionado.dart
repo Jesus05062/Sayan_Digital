@@ -1,17 +1,17 @@
 import 'package:aplication_1/providers/ingresar_provider.dart';
-import 'package:aplication_1/providers/predios_provider.dart';
+import 'package:aplication_1/providers/fraccionamiento_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:aplication_1/screens/alerts.dart';
 
-class Predios extends StatelessWidget {
-  const Predios({super.key});
+class Fraccionado extends StatelessWidget {
+  const Fraccionado({super.key});
 
   @override
   Widget build(BuildContext context) {
     final contrib = Provider.of<IngresarProvider>(context);
-    final predioProvider = Provider.of<PredioProvider>(context);
+    final predioProvider = Provider.of<FraccionamientoProvider>(context);
 
     final listaDeudasPorAnios = predioProvider.listaDeudasPorAnios;
     final listaTotal = predioProvider.total;
@@ -26,7 +26,7 @@ class Predios extends StatelessWidget {
         foregroundColor: Colors.blueGrey.shade800,
         centerTitle: true,
         title: Text(
-          "Impuestos Prediales",
+          "Fraccionamiento",
           style: GoogleFonts.urbanist(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -149,13 +149,13 @@ class Predios extends StatelessWidget {
   }
 
   Widget _buildResumenCard(Map<String, dynamic> item) {
-    final isFraccionado = item['id'] == 'N';
+    final isFraccionado = item['id'] == 'F';
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
         title: Text(
-          isFraccionado ? "Monto en Coactivo" : "Monto Deuda",
+          isFraccionado ? "Monto Fraccionados" : "Monto Deudas",
           style: GoogleFonts.urbanist(
             fontWeight: FontWeight.w600,
             color: Colors.blueGrey.shade700,
@@ -239,8 +239,8 @@ class Predios extends StatelessWidget {
   }
 
   Widget _buildAnioCard(BuildContext context, Map<String, dynamic> anio, String codigo,String token ) {
-    final isFraccionado = anio['id'] == 'N';
-    final bgColor = isFraccionado ? Colors.red.shade300 : Colors.blue.shade100;
+    final isFraccionado = anio['id'] == 'F';
+    final bgColor = isFraccionado ? Colors.grey.shade300 : Colors.blue.shade100;
 
     return Card(
       color: bgColor,
@@ -270,7 +270,7 @@ class Predios extends StatelessWidget {
             builder: (_) => const Center(child: CircularProgressIndicator()),
           );
 
-          final deudasProvider = Provider.of<PredioProvider>(context, listen: false);
+          final deudasProvider = Provider.of<FraccionamientoProvider>(context, listen: false);
           final success = await deudasProvider.prediosDetalles(codigo, anio['aini'],token);
 
           if (!success) {
@@ -279,7 +279,7 @@ class Predios extends StatelessWidget {
                     }
           Navigator.of(context, rootNavigator: true).pop();
 
-          Navigator.pushNamed(context, 'predios_detalles');
+          Navigator.pushNamed(context, 'fraccionamiento_detalles');
         },
       ),
     );

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:aplication_1/providers/cambiar_password_provider.dart';
+import 'package:aplication_1/providers/fraccionamiento_provider.dart';
 import 'package:aplication_1/providers/limpieza_provider.dart';
 import 'package:aplication_1/providers/ingresar_provider.dart';
 import 'package:aplication_1/providers/predios_provider.dart';
@@ -8,6 +10,7 @@ import 'package:aplication_1/screens/arbitrios/arbitrios_limpieza.dart';
 import 'package:aplication_1/screens/arbitrios/arbitrios_seguridad.dart';
 import 'package:aplication_1/screens/arbitrios/limpieza_detalles.dart';
 import 'package:aplication_1/screens/arbitrios/seguridad_detalles.dart';
+import 'package:aplication_1/screens/fraccionamiento/fraccionamiento_detalles.dart';
 import 'package:aplication_1/screens/login/acceder.dart';
 import 'package:aplication_1/screens/login/registro.dart';
 import 'package:aplication_1/screens/login/validar_cambio.dart';
@@ -20,8 +23,16 @@ import 'package:aplication_1/screens/principal.dart';
 import 'package:aplication_1/screens/viviendas.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'screens/predios/predios.dart';
+import 'screens/fraccionamiento/fraccionado.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() async{
   /* WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +41,7 @@ void main() async{
   await ingresarProvider.inicio(); */
   /* WidgetsFlutterBinding.ensureInitialized();
   await Preferences.init(); */
-  
+  HttpOverrides.global = MyHttpOverrides();
   runApp( const MyApp());
 }
 
@@ -54,6 +65,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RegistroProvider(), lazy: false,),
         ChangeNotifierProvider(create: (_) => IngresarProvider(), lazy: false,),
         ChangeNotifierProvider(create: (_) => CambiarPasswordProvider(), lazy: false),
+        ChangeNotifierProvider(create: (_) => FraccionamientoProvider(), lazy: false),
       ],
       child: MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -61,7 +73,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: 'splash',
+      initialRoute: 'inicio',
       routes: {
         'splash' : (_) => const SplashScreen(),
         'inicio' : (_) => const AccReg(),
@@ -77,7 +89,9 @@ class MyApp extends StatelessWidget {
         'seguridad_detalles' :(_) => const SeguridadDetalles(),
         'viviendas' : (_) => const Viviendas(),
         'validar_dni':(_) => const ValidarDni(),
-        'validar_cambio_password':(_) => const ValidarCambio()
+        'validar_cambio_password':(_) => const ValidarCambio(),
+        'fraccionado':(_) => const Fraccionado(),
+        'fraccionamiento_detalles':(_) => const fraccionamiento_detalles()
       },
     ),
     )

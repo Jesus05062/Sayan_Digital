@@ -6,6 +6,7 @@ import 'package:aplication_1/providers/predios_provider.dart';
 import 'package:aplication_1/providers/seguridad_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:aplication_1/screens/alerts.dart';
 
 class SelectArbitrios extends StatefulWidget {
   const SelectArbitrios({super.key});
@@ -22,6 +23,7 @@ class _SelectArbitriosState extends State<SelectArbitrios> {
     final contrib = Provider.of<IngresarProvider>(context);
 
     final String codigo= contrib.contribProvider;
+    final String Token = contrib.token;  
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -72,8 +74,11 @@ class _SelectArbitriosState extends State<SelectArbitrios> {
                       final limpiezaProvider =
                           Provider.of<ArbitriosProvider>(context, listen: false);
 
-                          await limpiezaProvider.getArbitriosLimpieza(codigo);
-                      
+                          final success = await limpiezaProvider.getArbitriosLimpieza(codigo,Token);
+                          if (!success) {
+                            mostrarAlertaTokenExpirado(context);
+                            return;
+                          }
                       Navigator.of(context, rootNavigator: true).pop();
 
                       if (limpiezaProvider.arbitriosGlobalLimpieza.isEmpty) {
@@ -158,8 +163,11 @@ class _SelectArbitriosState extends State<SelectArbitrios> {
                       final seguridadProvider =
                           Provider.of<SeguridadProvider>(context, listen: false);
                       
-                      await seguridadProvider.getArbitriosSeguridad(codigo);
-
+                      final success = await seguridadProvider.getArbitriosSeguridad(codigo,Token);
+                      if (!success) {
+                          mostrarAlertaTokenExpirado(context);
+                          return;
+                        }
                       Navigator.of(context, rootNavigator: true).pop();
                       
                       if (seguridadProvider.arbitriosGlobalSeguridad.isEmpty) {

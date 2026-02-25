@@ -28,7 +28,7 @@
         </intent>
     </queries>
    <application
-        android:label="Sayán Consultas"
+        android:label="Sayán Digital"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">

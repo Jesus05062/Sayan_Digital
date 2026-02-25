@@ -8,6 +8,37 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
+void showLoadingDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    barrierColor: Colors.black.withOpacity(0.15),
+    builder: (_) {
+      return Center(
+        child: Container(
+          width: 85,
+          height: 85,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 12,
+                color: Colors.black.withOpacity(0.15),
+              )
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          child: const CircularProgressIndicator(
+            strokeWidth: 3,
+            color: Color(0xFF003366),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 class ValidarDni extends StatefulWidget {
   const ValidarDni({super.key});
 
@@ -20,185 +51,188 @@ class _ValidarDniState extends State<ValidarDni> {
       mask: '###########', filter: {"#": RegExp(r'[0-9]')});
 
   final _formKey = GlobalKey<FormState>();
-
   final txtDni = TextEditingController();
 
   String dni = '';
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF3F4F6),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.black,
-          iconSize: 40,
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => {Navigator.of(context).pop()},
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87, size: 26),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SingleChildScrollView(
-        child: Align(
-          child: Container(
-            color: const Color.fromARGB(226, 248, 199, 53),
-            height: 700,
-            width: 400,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: 400,
-                    height: 170,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage('images/intro.jpg'))),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text('Restablecer Contraseña',
-                      style: GoogleFonts.aclonica(
-                          textStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 23,
-                        color: Color.fromRGBO(0, 41, 107, 1),
-                      ))),
-                  Text(
-                    'Se le enviará un código al correo',
-                    style: GoogleFonts.akshar(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Image.asset(
+              'images/intro.jpg',
+              height: screen.height * 0.25,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Text(
+                      'Restablecer Contraseña',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.urbanist(
                         textStyle: const TextStyle(
-                      fontSize: 20,
-                    )),
-                  ),
-                  Align(
-                    child: Container(
-                      width: 100,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                          color: Color(0xFF003366),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Se enviará un código a su correo registrado',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.urbanist(
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Align(
                       alignment: Alignment.centerLeft,
-                      margin:
-                          const EdgeInsets.only(left: 10, top: 20, bottom: 20),
                       child: Text(
-                        'DNI / RUC :',
+                        'DNI / RUC',
                         style: GoogleFonts.urbanist(
                           textStyle: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Color.fromRGBO(0, 41, 107, 1),
+                            fontSize: 16,
+                            color: Color(0xFF003366),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: 240,
-                    child: TextFormField(
+                    const SizedBox(height: 8),
+                    TextFormField(
                       inputFormatters: [dniMask],
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromRGBO(232, 236, 244, 1),
-                            ),
-                            borderRadius: BorderRadius.circular(5.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromRGBO(232, 236, 244, 1),
-                            ),
-                            borderRadius: BorderRadius.circular(5.5),
-                          ), // Outline Input Border
-                          hintText: '########',
-                          hintStyle: GoogleFonts.urbanist(
-                            textStyle: const TextStyle(
-                              color: Color.fromRGBO(131, 145, 161, 1),
-                            ),
-                          ),
-                          filled: true,
-                          fillColor: Color.fromRGBO(247, 248, 249, 1)),
+                        hintText: '########',
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
+                        filled: true,
+                        fillColor: const Color(0xFFF7F8F9),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
                       controller: txtDni,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Ingrese su DNI/RUC';
+                          return 'Ingrese su DNI o RUC';
                         }
+                        return null;
                       },
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 55,
-                    margin: const EdgeInsets.all(20),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          dni = txtDni.text;
-                          /* Navigator.pushReplacementNamed(
-                                context, 'validar_cambio_password'); */
-                          final cambioPaswordProvider =
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF003366),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          elevation: 3,
+                        ),
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
+
+                          dni = txtDni.text.trim();
+
+                          final cambioPasswordProvider =
                               Provider.of<CambiarPasswordProvider>(context,
                                   listen: false);
+
+                          /// Mostrar loader profesional
+                          showLoadingDialog(context);
+
                           final response =
-                              await cambioPaswordProvider.enviarCodigo(dni);
+                              await cambioPasswordProvider.enviarCodigo(dni);
+
+                          /// Cerrar loader
+                          Navigator.pop(context);
 
                           if (response == 'exitoso') {
-                            print(response);
+                            // Navegar automáticamente al ingreso del código
                             Navigator.pushReplacementNamed(
                                 context, 'validar_cambio_password');
                           } else if (response == 'no exitoso') {
-                            print(response);
-
                             displayCustomAlert(
                                 title: 'ALERTA',
                                 context: context,
-                                icon: cambioPaswordProvider.icon,
-                                message: cambioPaswordProvider.message,
-                                color: cambioPaswordProvider.color);
+                                icon: cambioPasswordProvider.icon,
+                                message: cambioPasswordProvider.message,
+                                color: cambioPasswordProvider.color);
 
-                            // Retraso de 6 segundos
                             Future.delayed(const Duration(seconds: 10), () {
                               Navigator.pop(context);
                             });
                           } else {
-
-                            return displayCustomAlert(
-                                context: context,
-                                icon: cambioPaswordProvider.icon,
-                                message: cambioPaswordProvider.message,
-                                color: cambioPaswordProvider.color);
+                            displayCustomAlert(
+                              title: 'ALERTA',
+                              context: context,
+                              icon: cambioPasswordProvider.icon,
+                              message: cambioPasswordProvider.message,
+                              color: cambioPasswordProvider.color,
+                            );
                           }
-                        }
-                      },
-                      child: Text(
-                        'Enviar Código',
-                        style: GoogleFonts.urbanist(
-                          textStyle: TextStyle(
+                        },
+                        child: Text(
+                          'Enviar Código',
+                          style: GoogleFonts.urbanist(
+                            textStyle: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 17,
                               color: Colors.white,
-                              letterSpacing: 4),
+                              letterSpacing: 1.5,
+                            ),
+                          ),
                         ),
                       ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            InterfaceColor.colorg,
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7),
-                          ))),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );

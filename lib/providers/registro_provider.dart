@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:aplication_1/config.dart';
 
 
 class RegistroProvider extends ChangeNotifier{
@@ -15,12 +15,12 @@ class RegistroProvider extends ChangeNotifier{
   }
 
   registrar(String correo, String password, String dni) async {
-    final ruta = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/cliente/');
+    final ruta = Uri.parse('${ConfigRuta.ApiUrl}');
     
     
 
 print("aquiiiiiiiiiiiiiiiiii");
-    final url = Uri.parse('${ruta}InsertarUsuario');
+    final url = Uri.parse('${ruta}cliente/InsertarUsuario');
 
     // Encriptar el password en base 64
     final passwordEncriptado = base64Encode(utf8.encode(password));
@@ -43,7 +43,8 @@ print("aquiiiiiiiiiiiiiiiiii");
     
     // Enviar la solicitud POST
     final response = await http.post(url,headers: headers, body: body);
-    
+    print('ddddddddddddd');
+    print(response);
      if (response.statusCode == 200) {
       print("--------**************");
       color = Colors.greenAccent;

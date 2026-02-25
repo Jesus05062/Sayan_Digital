@@ -5,6 +5,7 @@ import 'package:aplication_1/providers/seguridad_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:aplication_1/screens/alerts.dart';
 
 class ArbitriosSeguridad extends StatefulWidget {
   const ArbitriosSeguridad({super.key});
@@ -26,6 +27,7 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
 
     final global = arbitriosProvider.arbitriosGlobalSeguridad;
     final codigo = contrib.contribProvider;
+    final String Token = contrib.token;  
 
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +84,7 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
                 // 📌 Totales
                 ...listaTotal.map((t) {
                   final estado = t['id'];
-                  final esFraccionado = (estado == 'F');
+                  final esFraccionado = (estado == 'N');
                   return Card(
                     color: esFraccionado ? Colors.grey[200] : Colors.blue[50],
                     shape: RoundedRectangleBorder(
@@ -96,8 +98,8 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
                         children: [
                           Text(
                             esFraccionado
-                                ? "Monto Fraccionados:"
-                                : "Monto Deudas:",
+                                ? "Monto en Coactivo:"
+                                : "Monto Deuda:",
                             style: GoogleFonts.urbanist(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -200,8 +202,8 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _buildLegendItem(
-                                "Deudas", const Color.fromARGB(255, 95, 183, 255)),
-                            _buildLegendItem("Fraccionado", Colors.grey),
+                                "Deudas", const Color.fromARGB(255, 95, 183, 255)),                            
+                          _buildLegendItem("Coactivo", Colors.red.shade400),
                           ],
                         ),
                       ],
@@ -213,7 +215,7 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
                 ...listaDeudas.map((deuda) {
                   final estado = deuda['id'];
                   final cantidad = deuda['cantidad'];
-                  final esFraccionado = (estado == 'F');
+                  final esFraccionado = (estado == 'N');
 
                   return GestureDetector(
                     onTap: () async {
@@ -227,13 +229,16 @@ class _ArbitriosSeguridadState extends State<ArbitriosSeguridad> {
 
                       final deudasProvider =
                           Provider.of<SeguridadProvider>(context, listen: false);
-                      await deudasProvider.arbitriosSeguridadDetalles(
-                          codigo, deuda['aini']);
+                       final success = await deudasProvider.arbitriosSeguridadDetalles(codigo, deuda['aini'],Token );
+                       if (!success) {
+                          mostrarAlertaTokenExpirado(context);
+                          return;
+                        }
                       Navigator.of(context, rootNavigator: true).pop();
                       Navigator.pushNamed(context, 'seguridad_detalles');
                     },
                     child: Card(
-                      color: esFraccionado ? Colors.grey[100] : Colors.blue[50],
+                      color: esFraccionado ? Colors.red[100] : Colors.blue[50],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

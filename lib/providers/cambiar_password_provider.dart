@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:aplication_1/config.dart';
 
 class CambiarPasswordProvider extends ChangeNotifier{
   late String ruta;
@@ -13,11 +14,9 @@ class CambiarPasswordProvider extends ChangeNotifier{
   cambiarPasswordProvider(){
     print('Cambio de contraseña');
   }
-  //https://wxl1w6r0-7234.brs.devtunnels.ms/
 
   enviarCodigo(String dni)async{
-    final url = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/cliente/RestablecerContrasena?Documento=$dni');
-
+    final url = Uri.parse('${ConfigRuta.ApiUrl}cliente/RestablecerContrasena?Documento=$dni');
     print(url);
     final response = await http.post(url);//2027
 
@@ -43,9 +42,8 @@ class CambiarPasswordProvider extends ChangeNotifier{
   }
 
   CambiarPassword(String dni, String password,String codigo)async{
-    final url = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/cliente/CambioContrasena');
+    final url = Uri.parse('${ConfigRuta.ApiUrl}cliente/CambioContrasena');
 
-    // Encriptar el password en base 64
     final passwordEncriptado = base64Encode(utf8.encode(password));
 
     print(url);

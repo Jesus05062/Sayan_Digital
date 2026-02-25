@@ -22,13 +22,20 @@ class ArbitriosProvider extends ChangeNotifier {
     print('Ingresando a arbitriosProvider');
   }
 
-  arbitriosLimpiezaDetalles(String contrib, String anio) async{
+  Future<bool> arbitriosLimpiezaDetalles(String contrib, String anio, String token) async{
     String tributo = '005';
-    final url = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/clienteJesus/DetallesPredioPorAño?Contribuyente=$contrib&Ano=$anio&Tributo=$tributo');
-    final urls = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/clienteJesus/TotalPredioPorAño?Contribuyente=$contrib&Ano=$anio&Tributo=$tributo');
-
-    final response = await http.get(url);
-    final responses = await http.get(urls);
+    final url = Uri.parse('${ConfigRuta.ApiUrl}clienteJesus/DetallesPredioPorAño?Contribuyente=$contrib&Ano=$anio&Tributo=$tributo');
+    final urls = Uri.parse('${ConfigRuta.ApiUrl}clienteJesus/TotalPredioPorAño?Contribuyente=$contrib&Ano=$anio&Tributo=$tributo');
+    final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      };
+    final response = await http.get(url, headers: headers);
+    if  (response.statusCode ==401 || response.statusCode ==403)
+    {
+      return false;
+    }
+    final responses = await http.get(urls, headers: headers);
 
     final jsonResponse= convert.jsonDecode(response.body) as List<dynamic>;
     final jsonResponses = convert.jsonDecode(responses.body) as List<dynamic>;
@@ -38,18 +45,26 @@ class ArbitriosProvider extends ChangeNotifier {
     
 
     notifyListeners();
+    return true;
   }
 
-  Future <void>getArbitriosLimpieza(String contrib)async{
-    String tributo = '005';
+  Future <bool>getArbitriosLimpieza(String contrib, String token)async{
+    String tributo = '005'; 
 
-    final url = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/clienteJesus/PrediosAgrupadosPorAño?Contribuyente=$contrib&Tributo=$tributo'); //Predios
-    final urls =Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/clienteJesus/TotalesPrediosFraccionadosYDeuda?Contribuyente=$contrib&Tributo=$tributo');// totales
-    final urlTree = Uri.parse('https://wxl1w6r0-7234.brs.devtunnels.ms/clienteJesus/SumaTotales?Contribuyente=$contrib&Tributo=$tributo');
-
-    final response = await http.get(url);
-    final responses = await http.get(urls);
-    final responsesTree = await http.get(urlTree);
+    final url = Uri.parse('${ConfigRuta.ApiUrl}clienteJesus/PrediosAgrupadosPorAño?Contribuyente=$contrib&Tributo=$tributo'); //Predios
+    final urls =Uri.parse('${ConfigRuta.ApiUrl}clienteJesus/TotalesPrediosFraccionadosYDeuda?Contribuyente=$contrib&Tributo=$tributo');// totales
+    final urlTree = Uri.parse('${ConfigRuta.ApiUrl}clienteJesus/SumaTotales?Contribuyente=$contrib&Tributo=$tributo');
+    final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      };
+    final response = await http.get(url, headers: headers);
+    if  (response.statusCode ==401 || response.statusCode ==403)
+    {
+      return false;
+    }
+    final responses = await http.get(urls, headers: headers);
+    final responsesTree = await http.get(urlTree, headers: headers);
 
     final jsonResponse = convert.jsonDecode(response.body) as List<dynamic>;
 
@@ -69,6 +84,6 @@ class ArbitriosProvider extends ChangeNotifier {
 
     notifyListeners();
 
-    
+    return true;
   } 
 }

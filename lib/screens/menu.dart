@@ -28,11 +28,11 @@ class MyMenu extends StatelessWidget {
               child: Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    'https://munisayan.gob.pe/Rentas/Recursos/logo1.png',
-                    fit: BoxFit.contain,
-                    width: screenWidth * 0.4,
-                  ),
+                  child: Image.asset(
+                                    'images/SayanDigital.png',
+                                    fit: BoxFit.contain,
+                                    width: screenWidth * 0.4,
+                                  ),
                 ),
               ),
             ),
@@ -55,7 +55,13 @@ class MyMenu extends StatelessWidget {
               },
             ),
 
-            const Divider(height: 30),
+            /* _MenuItem(
+              label: "Contacto",
+              icon: Icons.contact_mail,
+              onTap: () => _showContactoPopup(context)
+            ), */
+
+            const Divider(height: 30, color: Colors.black,),
 
             // Cerrar sesión al final
             _MenuItem(
@@ -71,7 +77,63 @@ class MyMenu extends StatelessWidget {
       ),
     );
   }
+  void _showContactoPopup(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Información de Contacto",
+            style: GoogleFonts.urbanist(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey.shade800,
+            ),
+          ),
+          content: SizedBox(
+            width: screenWidth * 0.7, // Popup responsivo
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("📞 Teléfono: +51 987 654 321",
+                    style: GoogleFonts.urbanist(fontSize: 16)),
+                const SizedBox(height: 10),
+                Text("💬 Teléfono: +51 987 654 321",
+                    style: GoogleFonts.urbanist(fontSize: 16)),
+                const Divider(height: 30, color: Colors.black),
+                Text("📧 Email: helpdesk@munisayan.gob.pe",
+                    style: GoogleFonts.urbanist(fontSize: 16)),
+                const Divider(height: 30, color: Colors.black,),
+                Text("📍 Dirección: Av. Siempre Viva 123, Lima",
+                    style: GoogleFonts.urbanist(fontSize: 16)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Cerrar",
+                style: GoogleFonts.urbanist(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey.shade800,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        );
+      },
+    );
+  }
 }
+
 
 class _MenuItem extends StatelessWidget {
   final String label;
@@ -103,3 +165,5 @@ class _MenuItem extends StatelessWidget {
     );
   }
 }
+
+

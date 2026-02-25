@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:aplication_1/config.dart';
 import 'package:aplication_1/helpers/alert.dart';
+import 'package:aplication_1/providers/fraccionamiento_provider.dart';
 import 'package:aplication_1/providers/ingresar_provider.dart';
 import 'package:aplication_1/providers/predios_provider.dart';
+import 'package:aplication_1/screens/fraccionamiento/fraccionado.dart';
 import 'package:aplication_1/screens/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:aplication_1/screens/alerts.dart';
 
 class Principal extends StatefulWidget {
   const Principal({super.key});
@@ -32,6 +37,10 @@ class _PrincipalState extends State<Principal> with TickerProviderStateMixin {
       parent: _controller,
       curve: Curves.easeInOut,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _cargarOpciones(context);
+  });
   }
 
   @override
@@ -51,6 +60,7 @@ class _PrincipalState extends State<Principal> with TickerProviderStateMixin {
     final contrib = Provider.of<IngresarProvider>(context);
     final predioProvider = Provider.of<PredioProvider>(context);
     final String codigo = contrib.contribProvider;
+    final String Token = contrib.token;  
 
     return Scaffold(
       key: _scaffoldKey,
@@ -71,54 +81,119 @@ class _PrincipalState extends State<Principal> with TickerProviderStateMixin {
             const TitleSection(),
             const SizedBox(height: 20),
             // Opciones
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                children: [
-                  _OptionCard(
-                    title: "Predios",
-                    imagePath: "images/predios.jpg",
-                    onTap: () async {
-                      _showLoading(context, "Consultando...");
-                      await predioProvider.getPredios(codigo);
-                      Navigator.of(context, rootNavigator: true).pop();
+           Expanded(
+              child: Consumer<PredioProvider>(
+                builder: (context, provider, _) {
 
-                      if (predioProvider.predioGlobal.isEmpty) {
-                        displayCustomAlert(
-                          context: context,
-                          icon: Icons.info_outline,
-                          message: predioProvider.message,
-                          color: Colors.blueGrey,
-                        );
-                      } else {
-                        Navigator.pushReplacementNamed(context, 'predios');
-                      }
+                  final contrib = Provider.of<IngresarProvider>(context);
+                  final lista = contrib.listaPrincipal;
+                  if (lista.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No hay deudas disponibles",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    itemCount: lista.length,
+                    itemBuilder: (context, index) {
+                      final opcion = lista[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: _OptionCard(
+                          title: opcion['tipo'],    
+                          imagePath: opcion['img'], 
+                          onTap: () async {
+                                              final ruta = opcion['ruta']?.toString() ?? '';
+                                              final predioProvider = Provider.of<PredioProvider>(context, listen: false);
+                                              final ingresarProvider = Provider.of<IngresarProvider>(context, listen: false);
+                                              final fraccionad = Provider.of<FraccionamientoProvider>(context, listen: false);
+
+                                              _showLoading(context, "Cargando ${opcion['tipo']}...");
+
+                                              try {
+                                                if (ruta == 'predios') {
+                                                  // Cargar predios
+                                                  final ok = await predioProvider.getPredios(ingresarProvider.contribProvider,ingresarProvider.token);
+                                                  Navigator.of(context, rootNavigator: true).pop();
+                                                  print('************************');
+                                                    print(ok);
+                                                  print('************************');
+                                                  if (!ok || predioProvider.predioGlobal.isEmpty) {
+                                                                  mostrarAlertaTokenExpirado(context);
+                                                                  return;
+                                                  }
+                                                  
+                                                } 
+                                                else if (ruta == 'select_arbitrios') {
+                                                  Navigator.of(context, rootNavigator: true).pop();
+                                                } 
+                                                else if (ruta == 'fraccionado'){
+                                                  final ok = await fraccionad.getPredios(ingresarProvider.contribProvider,ingresarProvider.token);
+                                                  Navigator.of(context, rootNavigator: true).pop();
+
+                                                  if (!ok || fraccionad.predioGlobal.isEmpty) {
+                                                                  mostrarAlertaTokenExpirado(context);
+                                                                  return;
+                                                  }
+                                                  
+                                                }
+
+                                                
+                                                if (ruta.isNotEmpty) {
+                                                  Navigator.pushReplacementNamed(context, ruta);
+                                                } else {
+                                                  displayCustomAlert(
+                                                    context: context,
+                                                    icon: Icons.warning_amber,
+                                                    message: "Ruta no definida para esta opción.",
+                                                    color: Colors.orangeAccent,
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                Navigator.of(context, rootNavigator: true).pop();
+                                                displayCustomAlert(
+                                                  context: context,
+                                                  icon: Icons.error_outline,
+                                                  message: "Error al cargar la opción: $e",
+                                                  color: Colors.redAccent,
+                                                );
+                                              }
+                                            },
+                        ),
+                      );
                     },
-                  ),
-                  const SizedBox(height: 20),
-                  _OptionCard(
-                    title: "Arbitrios",
-                    imagePath: "images/arbitrios.jpg",
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, 'select_arbitrios');
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
+
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          _showLoading(context, "Cargando perfil...");
-          await predioProvider.getDatos(codigo);
-          Navigator.of(context, rootNavigator: true).pop();
-          _toggleProfile();
-        },
-        backgroundColor: Colors.blueGrey.shade800,
-        child: const Icon(Icons.person, size: 28),
-      ),
+          onPressed: () async {
+            _showLoading(context, "Cargando perfil...");
+
+            final isValidToken = await predioProvider.getDatos(codigo, Token);
+
+            Navigator.of(context, rootNavigator: true).pop();
+
+            if (!isValidToken) {
+              mostrarAlertaTokenExpirado(context);
+              return;
+            }
+
+            _toggleProfile();
+          },
+          backgroundColor: Colors.blueAccent,
+          child: const Icon(Icons.person_2_outlined, size: 28, color: Colors.white,),
+        ),
+
       bottomSheet: SizeTransition(
         sizeFactor: _animation,
         axisAlignment: -1.0,
@@ -201,7 +276,25 @@ class _PrincipalState extends State<Principal> with TickerProviderStateMixin {
       ),
     );
   }
+
+
+Future<void> _cargarOpciones(BuildContext context) async {
+  final contrib = Provider.of<IngresarProvider>(context, listen: false);
+  final predioProvider = Provider.of<PredioProvider>(context, listen: false);
+  _showLoading(context, "Cargando menú...");
+
+  final ok = await contrib.PrincipalMenu(contrib.contribProvider, contrib.token);
+  Navigator.of(context, rootNavigator: true).pop();
+  if (!ok) {
+    mostrarAlertaTokenExpirado(context);
+  }
 }
+
+
+}
+
+
+
 
 class TitleSection extends StatelessWidget {
   const TitleSection({super.key});
